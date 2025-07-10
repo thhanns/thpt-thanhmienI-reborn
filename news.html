@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin tức - THPT Thanh Miện</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #0f172a;
+            --light-color: #f8fafc;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-accent: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: #f5f7fa;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: var(--shadow-md);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .breadcrumb {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 0;
+        }
+
+        .breadcrumb-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: white;
+        }
+
+        .breadcrumb .current {
+            color: white;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+
+        .content-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .news-list {
+            padding: 2rem;
+        }
+
+        .news-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .news-item:hover {
+            background: var(--gray-50);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .news-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--gradient-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .news-content {
+            flex: 1;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .news-summary {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-content {
+            padding: 1.5rem;
+        }
+
+        .policy-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .policy-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .student-info {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            margin-bottom: 0.75rem;
+            padding-left: 1rem;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .info-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .info-list a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .info-list a:hover {
+            color: var(--primary-color);
+        }
+
+        .news-tag {
+            background: var(--danger-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .news-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .news-icon {
+                margin: 0 auto;
+            }
+
+            .breadcrumb-container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                THPT Thanh Miện
+            </a>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html"><i class="fas fa-home"></i> Trang chủ</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="current">Tin tức</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <main class="main-content">
+            <div class="content-header">
+                <h1>TIN TỨC</h1>
+            </div>
+            <div class="news-list">
+                <div class="news-item">
+                    <div class="news-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="news-content">
+                        <h3 class="news-title">Thư ngỏ</h3>
+                        <p class="news-summary">Thư ngỏ gửi tới phụ huynh và học sinh về việc chuẩn bị cho năm học mới 2024-2025</p>
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-icon">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <div class="news-content">
+                        <h3 class="news-title">Thông báo danh sách tổ hợp các môn học lựa chọn và cụm chuyên đề học tập lớp 10 năm học 2024 - 2025</h3>
+                        <p class="news-summary">Danh sách chi tiết các tổ hợp môn học và cụm chuyên đề cho học sinh lớp 10 năm học 2024-2025</p>
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="news-content">
+                        <h3 class="news-title">Kế hoạch Tuyển sinh lớp 10 trung học phổ thông năm học 2024 - 2025</h3>
+                        <p class="news-summary">Kế hoạch chi tiết về tuyển sinh lớp 10 cho năm học 2024-2025 với các thông tin quan trọng</p>
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="news-content">
+                        <h3 class="news-title">Kế hoạch Chiến lược phát triển nhà trường giai đoạn 2023-2028, tầm nhìn đến năm 2035</h3>
+                        <p class="news-summary">Kế hoạch phát triển dài hạn của trường với tầm nhìn đến năm 2035</p>
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="news-content">
+                        <h3 class="news-title">Chúc mừng 41 năm Ngày Nhà giáo Việt Nam</h3>
+                        <p class="news-summary">Lời chúc mừng nhân dịp kỷ niệm 41 năm Ngày Nhà giáo Việt Nam 20/11</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    CHÍNH PHỦ ĐIỆN TỬ
+                </div>
+                <div class="sidebar-content">
+                    <input type="text" class="policy-input" placeholder="VĂN BẢN PHÁP QUY">
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-content">
+                    <img src="https://via.placeholder.com/300x200/4CAF50/FFFFFF?text=TRANG+TIN+HỌC+SINH" 
+                         alt="Trang tin học sinh" class="student-info">
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    TIN ĐỌC NHIỀU
+                </div>
+                <div class="sidebar-content">
+                    <ul class="info-list">
+                        <li><a href="#">Hội nghị tập huấn đổi mới nâng cao hiệu quả của sinh hoạt chuyên môn trong các trường tiểu học</a></li>
+                        <li><a href="#">Đại hội Công đoàn Giáo dục Hải Dương khóa XIX, nhiệm kỳ 2018-2023</a></li>
+                        <li><a href="#">Thông báo v/v cung cấp tài khoản email nhà trường cho cán bộ, giáo viên</a></li>
+                        <li><a href="#">Kế hoạch tổ chức các hoạt động kỷ niệm 90 năm Ngày thành lập Đoàn TNCS Hồ Chí Minh</a></li>
+                        <li><a href="#">Chương trình hành động thực hiện Nghị quyết Đại hội đại biểu toàn quốc lần thứ XIII của Đảng</a></li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>
