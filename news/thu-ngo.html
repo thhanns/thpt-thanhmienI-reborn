@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư ngỏ - THPT Thanh Miện</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #0f172a;
+            --light-color: #f8fafc;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-accent: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            --gradient-surface: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            background-color: #ffffff;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 0.75rem 0;
+            box-shadow: var(--shadow-lg);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background: var(--gradient-accent);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1px;
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+            left: 0;
+        }
+
+        .breadcrumb {
+            background: var(--gradient-surface);
+            padding: 8rem 0 3rem;
+            margin-top: 80px;
+        }
+
+        .breadcrumb-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .breadcrumb-nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb-nav a:hover {
+            color: var(--secondary-color);
+        }
+
+        .breadcrumb-nav .separator {
+            color: var(--gray-400);
+        }
+
+        .page-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+        }
+
+        .main-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 4rem;
+            align-items: flex-start;
+        }
+
+        .article-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .article-header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .article-meta i {
+            color: var(--primary-color);
+        }
+
+        .article-intro {
+            background: var(--gray-50);
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        .article-intro h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .article-body {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .article-body h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1.5rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .article-body h3 {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 2rem 0 1rem 0;
+        }
+
+        .article-body p {
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        .article-body ul, .article-body ol {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+        }
+
+        .article-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px 0 0 2px;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .signature-date {
+            font-style: italic;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .signature-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .signature-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .related-news {
+            list-style: none;
+        }
+
+        .related-news li {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gray-100);
+            transition: all 0.3s ease;
+        }
+
+        .related-news li:last-child {
+            border-bottom: none;
+        }
+
+        .related-news li:hover {
+            background: var(--gray-50);
+            margin: 0 -1rem;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .related-news a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            line-height: 1.4;
+            display: block;
+        }
+
+        .related-news a:hover {
+            color: var(--primary-color);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background-color: var(--gray-100);
+        }
+
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-item h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-item p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .info-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .info-item a:hover {
+            text-decoration: underline;
+        }
+
+        .share-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .share-btn.facebook {
+            background: #f8fafc;
+            color: #1877f2;
+        }
+
+        .share-btn.facebook:hover {
+            background: #1877f2;
+            color: white;
+        }
+
+        .share-btn.twitter {
+            background: #f8fafc;
+            color: #1da1f2;
+        }
+
+        .share-btn.twitter:hover {
+            background: #1da1f2;
+            color: white;
+        }
+
+        .share-btn.linkedin {
+            background: #f8fafc;
+            color: #0077b5;
+        }
+
+        .share-btn.linkedin:hover {
+            background: #0077b5;
+            color: white;
+        }
+
+        .share-btn.copy {
+            background: #f8fafc;
+            color: var(--text-primary);
+        }
+
+        .share-btn.copy:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 4rem 0 2rem;
+            position: relative;
+            overflow: hidden;
+            margin-top: 4rem;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gradient-accent);
+        }
+
+        .footer-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .footer-section p, .footer-section a {
+            color: var(--gray-400);
+            text-decoration: none;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-800);
+            color: var(--gray-400);
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .article-content {
+                padding: 2rem;
+            }
+
+            .article-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 2rem;
+                box-shadow: var(--shadow-xl);
+                border-radius: 0 0 20px 20px;
+                gap: 1rem;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .breadcrumb {
+                padding: 6rem 0 2rem;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .article-content {
+                padding: 1.5rem;
+            }
+
+            .article-title {
+                font-size: 1.8rem;
+            }
+
+            .article-body {
+                font-size: 1rem;
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+    <link rel="icon" type="image" href="img/logo.png">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                THPT Thanh Miện
+            </a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="../index.html" class="nav-link">Trang chủ</a></li>
+                <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
+                <li><a href="index.html#programs" class="nav-link">Chương trình</a></li>
+                <li><a href="../news.html" class="nav-link">Tin tức</a></li>
+                <li><a href="../contact.html" class="nav-link">Liên hệ</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <section class="breadcrumb">
+        <div class="breadcrumb-container">
+            <nav class="breadcrumb-nav">
+                <a href="../index.html">Trang chủ</a>
+                <span class="separator"><i class="fas fa-chevron-right"></i></span>
+                <a href="../news.html">Tin tức</a>
+                <span class="separator"><i class="fas fa-chevron-right"></i></span>
+                <span>Thư ngỏ</span>
+            </nav>
+            <h1 class="page-title">Thư ngỏ</h1>
+            <p class="page-subtitle">Về việc tuyển sinh lớp 10 THPT năm học 2024 - 2025</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <article class="article-content fade-in">
+            <header class="article-header">
+                <h1 class="article-title">THƯ NGỎ</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 06/05/2024</span>
+                    <span><i class="fas fa-user"></i> Hiệu trưởng</span>
+                    <span><i class="fas fa-eye"></i> 1,247 lượt xem</span>
+                </div>
+            </header>
+
+            <div class="article-intro">
+                <h3>Về việc tuyển sinh lớp 10 THPT năm học 2024 - 2025</h3>
+                <p><strong>Kính gửi:</strong> Quý thầy cô giáo, quý phụ huynh và các em học sinh!</p>
+            </div>
+
+            <div class="article-body">
+                <p>Năm học 2023 - 2024 sắp kết thúc, chắc chắn quý phụ huynh và các em học sinh lớp 9 đang băn khoăn chọn một ngôi trường THPT tốt nhất và phù hợp nhất cho con, em mình. Hiểu được mối quan tâm, lo lắng đó của quý phụ huynh và các em, trường THPT Thanh Miện xin chia sẻ một số thông tin về nhà trường để quý phụ huynh và các em tham khảo, cụ thể như sau:</p>
+
+                <h2>I. Thông tin về trường THPT Thanh Miện</h2>
+                
+                <p>Trường THPT Thanh Miện thành lập năm 1965, được Chủ tịch UBND tỉnh công nhận là trường THPT đạt chuẩn quốc gia năm 2018, đến nay đã trải qua 59 năm xây dựng và phát triển. Được sự quan tâm, giúp đỡ, tạo điều kiện của các cấp quản lý cùng sự nỗ lực phấn đấu không ngừng của các thế hệ cán bộ, giáo viên, nhân viên và học sinh, trường THPT Thanh Miện đã đạt được nhiều thành tích xuất sắc, tạo được nhiều tin cậy trong cộng đồng, góp phần không nhỏ vào thành tích chung của sự nghiệp giáo dục trong cả nước.</p>
+
+                <div class="highlight-box">
+                    <p><strong>Cơ sở vật chất hiện đại:</strong> Trường có 27 phòng học, đủ cho 27 lớp học vào buổi sáng. Hiện tại tất cả các phòng học đều được trang bị hệ thống máy chiếu (hoặc TV), máy tính, điều hòa nhiệt độ, mạng internet, camera giám sát, hệ thống âm thanh hiện đại. Khuôn viên nhà trường được quy hoạch cảnh quan xanh, sạch, đẹp; sân chơi, bãi tập được xây dựng, bổ sung thường xuyên, có sân bóng đá có nhân tạo, sân bóng rổ, sân bóng chuyền, sân cầu lông đạt tiêu chuẩn thi đấu; có Nhà mái che sân tập đa năng rộng 800 m²; sân khấu chính có màn hình Led 185 inch phục vụ các hoạt động ngoại khóa và trải nghiệm, hướng nghiệp.</p>
+                </div>
+
+                <p>Đội ngũ giáo viên có trình độ chuyên môn cao, giàu kinh nghiệm; 100% giáo viên đạt chuẩn đại học, trong đó có 17 giáo viên có trình độ thạc sĩ, 19 giáo viên được công nhận là giáo viên dạy giỏi cấp tỉnh, 05 chiến sĩ thi đua cấp tỉnh, 02 chiến sĩ thi đua toàn quốc, 01 nhà giáo ưu tú. Các thầy, cô luôn yêu nghề, nhiệt tình, tâm huyết, trách nhiệm, tận tâm, tận lực với học sinh, sẵn sàng đáp ứng mọi câu hỏi học tập, nâng cao kiến thức của học sinh ở tất cả các môn, các khối thi.</p>
+
+                <p>Môi trường giáo dục an toàn, lành mạnh; bên cạnh việc học tập, học sinh được tham gia nhiều hoạt động văn nghệ, thể thao và các hoạt động trải nghiệm, hướng nghiệp, hấp dẫn, phù hợp với tâm lý học sinh, giúp các em phát triển toàn diện cả về năng lực và phẩm chất. Hiện nhà trường có nhiều câu lạc bộ để các em học sinh có thể tham gia như: CLB Ngoại ngữ - ThanhMien Language Club (TLC), CLB Truyền thông (TMC), CLB Âm nhạc - Music Vivu Club (Vivu), CLB Nhảy - Fly Crew, CLB Múa - Flashlight, CLB Vẽ - The Artblockers, CLB Sách và hành động, CLB Tin học - IT CLUB, CLB Bóng đá, ...</p>
+
+                <p>Nhà trường tổ chức, xếp lớp khoa học, hợp lí, đáp ứng nguyện vọng của học sinh về ban thi và khối thi, giúp các em lựa chọn và thay đổi các tổ hợp môn thi vào các trường Đại học, Cao đẳng.</p>
+
+                <div class="highlight-box">
+                    <p><strong>Thành tích xuất sắc:</strong> Chất lượng giáo dục của nhà trường luôn nằm trong top đầu của tỉnh, tỉ lệ học sinh đỗ tốt nghiệp THPT luôn xấp xỉ 100%, tỉ lệ học sinh thi đỗ vào các trường đại học luôn đạt 90% trở lên, đội tuyển học sinh giỏi của nhà trường nhiều năm xếp thứ nhất toàn tỉnh (năm học 2020-2021, 2022-2023, 2023-2024), nhiều học sinh đạt giải nhất cá nhân (năm học 2023-2024 có 4 học sinh đạt giải nhất cá nhân).</p>
+                </div>
+
+                <p>Với thành tích đó, 7 năm học gần đây, nhà trường luôn được công nhận là "Tập thể Lao động xuất sắc", năm 2020 được Bộ Giáo dục và Đào tạo tặng "Cờ Thi đua", năm 2021 được UBND tỉnh tặng "Cờ Thi đua", năm 2023 được Thủ tướng Chính phủ tặng bằng khen, năm 2018, 2021, 2022 và 2023 được Chủ tịch UBND tỉnh tặng bằng khen, năm 2019 được Bộ GDĐT tặng Bằng khen.</p>
+
+                <h2>II. Thông tin tuyển sinh lớp 10 THPT năm học 2024 - 2025</h2>
+
+                <h3>1. Chỉ tiêu tuyển sinh: tuyển 378 học sinh.</h3>
+
+                <h3>2. Đối tượng tuyển sinh:</h3>
+                <p>Học sinh thuộc địa bàn huyện Thanh Miện và các huyện lân cận, tốt nghiệp THCS và sinh năm 2007, 2008, 2009.</p>
+
+                <h3>3. Ngày thi tuyển:</h3>
+                <p>Ngày 01, 02 tháng 6 năm 2024.</p>
+
+                <p>Thông tin chi tiết về tuyển sinh lớp 10 năm học 2024 - 2025 của Trường THPT Thanh Miện được đăng tại Website: <strong>http://thptthanhmiện.haiduong.edu.vn/</strong> và Fanpage: <strong>Trường THPT Thanh Miện, Đoàn trường THPT Thanh Miện</strong>.</p>
+
+                <h3>4. Chính sách thu hút nhân tài:</h3>
+
+                <div class="highlight-box">
+                    <p>Hàng năm, Nhà trường kết hợp với Hội khuyến học huyện Thanh Miện và Công ty TNHH MTV Ăn Hiền đều trao thưởng cho học sinh thủ khoa và 15 học sinh có kết quả cao trong Kì thi tuyển sinh lớp 10 tại trường THPT Thanh Miện, trong đó em thủ khoa sẽ được tặng một chiếc xe điện trị giá hơn 14 triệu đồng.</p>
+                </div>
+
+                <p>Học sinh đã dự thi HSG cấp tỉnh các môn văn hóa, văn nghệ, TDTT ở cấp THCS sẽ được chọn vào các đội tuyển HSG của trường, có cơ hội dự thi HSG cấp tỉnh và sẽ được nhận nhiều phần thưởng khác.</p>
+
+                <p>Ngoài ra, học sinh có hoàn cảnh khó khăn sẽ được đón nhận sự quan tâm đặc biệt về tình cảm và vật chất để các em yên tâm học tập và rèn luyện.</p>
+
+                <p>Chúng tôi gửi kèm thư này thông báo về việc công khai danh sách tổ hợp các môn học lựa chọn và cụm chuyên đề học tập lớp 10 năm học 2024 - 2025. Rất mong các thầy cô giáo, các quý vị phụ huynh học sinh và các em học sinh lớp 9 tìm hiểu kĩ và có sự lựa chọn đúng đắn, sáng suốt cho tương lai của con em mình.</p>
+
+                <div class="highlight-box">
+                    <p style="text-align: center; font-style: italic; color: var(--primary-color); font-weight: 600;">
+                        Nhà trường trân trọng cảm ơn quý lãnh đạo, quý thầy cô giáo, các bậc phụ huynh và học sinh đã đặt niềm tin ở trường THPT Thanh Miện!
+                    </p>
+                </div>
+            </div>
+
+            <div class="signature">
+                <div class="signature-date">Thanh Miện, ngày 06 tháng 05 năm 2024</div>
+                <div class="signature-title">HIỆU TRƯỞNG</div>
+                <div class="signature-name">Lê Văn Lực</div>
+            </div>
+        </article>
+
+        <aside class="sidebar">
+            <div class="sidebar-card fade-in">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-newspaper"></i>
+                    Tin tức liên quan
+                </h3>
+                <ul class="related-news">
+                    <li>
+                        <a href="#">Hội nghị tập huấn đổi mới nâng cao hiệu quả của sinh hoạt chuyên môn trong các trường tiểu học</a>
+                    </li>
+                    <li>
+                        <a href="#">Đại hội Công đoàn Giáo dục Hải Dương khóa XIX, nhiệm kỳ 2018-2023</a>
+                    </li>
+                    <li>
+                        <a href="#">Thông báo v/v cung cấp tài khoản đăng nhập hệ thống CSDL toàn ngành</a>
+                    </li>
+                    <li>
+                        <a href="#">Tuyên dương, khen thưởng học sinh giỏi năm học 2017-2018</a>
+                    </li>
+                    <li>
+                        <a href="#">Ngành giáo dục và đào tạo Hải Dương, tổng kết năm học 2017-2018 và triển khai nhiệm vụ năm học 2018-2019</a>
+                    </li>
+                    <li>
+                        <a href="#">Thông báo danh sách tập thể, cá nhân được khen thưởng (kèm theo Công văn số 942/SGDĐT-VP ngày 07/8/2018 của Sở GD&ĐT)</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-card fade-in">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-info-circle"></i>
+                    Thông tin hữu ích
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h4><i class="fas fa-calendar-check"></i> Lịch thi tuyển sinh</h4>
+                        <p>Ngày 01-02/06/2024</p>
+                    </div>
+                    <div class="info-item">
+                        <h4><i class="fas fa-users"></i> Chỉ tiêu tuyển sinh</h4>
+                        <p>378 học sinh</p>
+                    </div>
+                    <div class="info-item">
+                        <h4><i class="fas fa-globe"></i> Website chính thức</h4>
+                        <p><a href="http://thptthanhmiện.haiduong.edu.vn/" target="_blank">thptthanhmiện.haiduong.edu.vn</a></p>
+                    </div>
+                    <div class="info-item">
+                        <h4><i class="fas fa-phone"></i> Hotline tư vấn</h4>
+                        <p>0220 373 6980</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-card fade-in">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-share-alt"></i>
+                    Chia sẻ bài viết
+                </h3>
+                <div class="share-buttons">
+                    <a href="#" class="share-btn facebook">
+                        <i class="fab fa-facebook-f"></i>
+                        Facebook
+                    </a>
+                    <a href="#" class="share-btn twitter">
+                        <i class="fab fa-twitter"></i>
+                        Twitter
+                    </a>
+                    <a href="#" class="share-btn linkedin">
+                        <i class="fab fa-linkedin-in"></i>
+                        LinkedIn
+                    </a>
+                    <a href="#" class="share-btn copy">
+                        <i class="fas fa-copy"></i>
+                        Sao chép link
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Giới thiệu</h3>
+                <p>Trường THPT Thanh Miện - Nơi ươm mầm tri thức và phát triển tài năng.</p>
+                <p>&copy;THPT Thanh Miện. All rights reserved.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Liên hệ</h3>
+                <p><i class="fas fa-phone"></i>0220 373 6980. Giờ làm việc: 07:00–17:00, nghỉ Thứ Bảy và Chủ Nhật</p>
+                <p><i class="fas fa-fax"></i>Mã số thuế: 0800510218 cấp ngày 14/01/2009 </p>
+                <p><i class="fas fa-location-arrow"></i>THPT Thanh Miện, địa chỉ tại xã Lam Sơn, Thị trấn Thanh Miện, huyện Thanh Miện, Hải Dương</p>
+            </div>
+            <div class="footer-section">
+                <h3>Kết nối với Dev :3</h3>
+                <p>Có bug báo với Dev nhee!</p>
+                <a href="https://www.facebook.com/ann.thaii.70909/" class="social-icon"><i class="fab fa-facebook"></i>Facebook.</a>
+                <a href="https://discord.com/users/1145640924634947707" class="social-icon"><i class="fab fa-discord"></i>Discord.</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>THPT Thanh Miện. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const navMenu = document.getElementById('nav-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                navMenu.classList.remove('active');
+            }
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                } else {
+                    entry.target.classList.remove('visible');
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.fade-in').forEach((section) => {
+            observer.observe(section);
+        });
+
+        // Share functionality
+        document.querySelector('.share-btn.copy').addEventListener('click', function(e) {
+            e.preventDefault();
+            navigator.clipboard.writeText(window.location.href).then(function() {
+                alert('Đã sao chép link bài viết!');
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

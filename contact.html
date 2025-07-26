@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liên hệ - THPT Thanh Miện</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -50,21 +50,25 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             color: var(--text-primary);
-            background-color: #f5f7fa;
-            min-height: 100vh;
+            background-color: var(--gray-50);
+            scroll-behavior: smooth;
         }
 
         .navbar {
-            background: white;
-            box-shadow: var(--shadow-md);
-            padding: 1rem 0;
-            position: sticky;
+            position: fixed;
             top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
+            padding: 0.75rem 0;
+            box-shadow: var(--shadow-lg);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .nav-container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -80,6 +84,7 @@
             align-items: center;
             gap: 12px;
             text-decoration: none;
+            transition: all 0.3s ease;
         }
 
         .logo i {
@@ -90,50 +95,103 @@
             background-clip: text;
         }
 
-        .breadcrumb {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.75rem 0;
+        .logo:hover {
+            transform: scale(1.05);
         }
 
-        .breadcrumb-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
+        .nav-menu {
             display: flex;
+            list-style: none;
+            gap: 2.5rem;
             align-items: center;
-            gap: 0.5rem;
         }
 
-        .breadcrumb a {
-            color: rgba(255, 255, 255, 0.8);
+        .nav-link {
             text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .breadcrumb a:hover {
-            color: white;
-        }
-
-        .breadcrumb .current {
-            color: white;
+            color: var(--text-primary);
             font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background: var(--gradient-accent);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1px;
+        }
+
+        .nav-link:hover::before, .nav-link.active::before {
+            width: 100%;
+            left: 0;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background-color: var(--gray-100);
         }
 
         .main-content {
+            padding-top: 100px;
+            min-height: 100vh;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 2rem 0;
+        }
+
+        .page-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-container {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
             gap: 3rem;
-            margin-bottom: 3rem;
+            align-items: flex-start;
         }
 
-        .info-section {
+        .contact-info {
             background: white;
             border-radius: 20px;
             padding: 2.5rem;
@@ -142,45 +200,34 @@
             height: fit-content;
         }
 
-        .contact-form-section {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
-        }
-
-        .section-title {
-            font-size: 1.75rem;
+        .contact-info h3 {
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            position: relative;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .section-title::after {
-            content: '';
-            position: absolute;
-            width: 50px;
-            height: 3px;
-            background: var(--gradient-accent);
-            bottom: -8px;
-            left: 0;
-            border-radius: 2px;
-        }
-
-        .school-info {
+        .contact-info .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
             margin-bottom: 2rem;
+            font-style: italic;
         }
 
         .school-name {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.75rem;
+            font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
         }
 
-        .info-item {
+        .contact-item {
             display: flex;
             align-items: flex-start;
             gap: 1rem;
@@ -192,48 +239,89 @@
             transition: all 0.3s ease;
         }
 
-        .info-item:hover {
+        .contact-item:hover {
             background: white;
             box-shadow: var(--shadow-md);
             transform: translateY(-2px);
         }
 
-        .info-icon {
+        .contact-icon {
             width: 40px;
             height: 40px;
-            border-radius: 10px;
             background: var(--gradient-accent);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             flex-shrink: 0;
         }
 
-        .info-content {
+        .contact-details {
             flex: 1;
         }
 
-        .info-label {
+        .contact-label {
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 0.25rem;
-        }
-
-        .info-value {
-            color: var(--text-secondary);
             font-size: 0.95rem;
         }
 
-        .thank-you-message {
-            background: var(--gradient-surface);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            font-style: italic;
+        .contact-value {
             color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .notice-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            border: 1px solid #0284c7;
+            border-radius: 12px;
+            padding: 1.5rem;
             margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notice-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-accent);
+        }
+
+        .notice-box p {
+            color: #0c4a6e;
+            font-style: italic;
+            margin: 0;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .contact-form {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
         }
 
         .form-group {
@@ -242,40 +330,43 @@
 
         .form-label {
             display: block;
-            margin-bottom: 0.5rem;
             font-weight: 600;
             color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
 
-        .form-control {
+        .required {
+            color: var(--danger-color);
+        }
+
+        .form-input, .form-textarea {
             width: 100%;
             padding: 0.875rem 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
-            background: white;
+            background: var(--gray-50);
         }
 
-        .form-control:focus {
+        .form-input:focus, .form-textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: white;
         }
 
-        .form-control::placeholder {
-            color: var(--text-muted);
-        }
-
-        textarea.form-control {
-            min-height: 120px;
+        .form-textarea {
             resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
         }
 
-        .required-note {
+        .form-note {
             font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 1.5rem;
+            margin-top: 0.5rem;
             font-style: italic;
         }
 
@@ -283,9 +374,9 @@
             background: var(--gradient-accent);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -297,7 +388,7 @@
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
+            box-shadow: var(--shadow-lg);
         }
 
         .submit-btn:active {
@@ -305,27 +396,56 @@
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 2rem;
+                box-shadow: var(--shadow-xl);
+                border-radius: 0 0 20px 20px;
+                gap: 1rem;
+            }
+
+            .nav-menu.active {
+                display: flex;
             }
 
             .main-content {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .contact-container {
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
 
-            .info-section, .contact-form-section {
+            .contact-info, .contact-form {
                 padding: 2rem 1.5rem;
             }
 
-            .breadcrumb-container {
-                padding: 0 1rem;
+            .contact-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+
+            .contact-icon {
+                align-self: center;
             }
         }
 
         .fade-in {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px);
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -333,133 +453,114 @@
             opacity: 1;
             transform: translateY(0);
         }
-
-        .success-message {
-            background: var(--success-color);
-            color: white;
-            padding: 1rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
+    <link rel="icon" type="image" href="img/logo.png">
 </head>
 <body>
-    <nav class="navbar">
+        <nav class="navbar" id="navbar">
         <div class="nav-container">
-            <a href="#" class="logo">
+            <a href="index.html" class="logo">
                 <i class="fas fa-graduation-cap"></i>
                 THPT Thanh Miện
             </a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="index.html" class="nav-link">Trang chủ</a></li>
+                <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
+                <li><a href="index.html#programs" class="nav-link">Chương trình</a></li>
+                <li><a href="news.html" class="nav-link">Tin tức</a></li>
+                <li><a href="contact.html" class="nav-link active">Liên hệ</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </nav>
 
-    <div class="breadcrumb">
-        <div class="breadcrumb-container">
-            <a href="index.html" onclick="window.close()"><i class="fas fa-home"></i> Trang chủ</a>
-            <i class="fas fa-chevron-right"></i>
-            <span class="current">Liên hệ</span>
+    <main class="main-content">
+        <div class="page-header fade-in">
+            <h1 class="page-title">Liên hệ với chúng tôi</h1>
+            <p class="page-subtitle">Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Hãy liên hệ với chúng tôi qua các thông tin dưới đây hoặc gửi tin nhắn trực tiếp.</p>
         </div>
-    </div>
 
-    <div class="container">
-        <div class="main-content">
-            <div class="info-section fade-in">
-                <h2 class="section-title">Thông tin liên hệ</h2>
-                <div class="school-info">
-                    <p style="font-style: italic; color: var(--text-muted); margin-bottom: 1.5rem;">Liên hệ trực tiếp:</p>
-                    <h3 class="school-name">Trường THPT Thanh Miện</h3>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Địa chỉ:</div>
-                            <div class="info-value">Lam Sơn - Thanh Miện - Hải Dương</div>
-                        </div>
+        <div class="contact-container fade-in">
+            <div class="contact-info">
+                <h3>
+                    <i class="fas fa-info-circle"></i>
+                    Thông tin liên hệ
+                </h3>
+                <p class="subtitle">Liên hệ trực tiếp:</p>
+                
+                <div class="school-name">Trường THPT Thanh Miện</div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
                     </div>
-
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Điện thoại:</div>
-                            <div class="info-value">0123 456 789</div>
-                        </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Email:</div>
-                            <div class="info-value">thptthanhmien@gmail.com</div>
-                        </div>
+                    <div class="contact-details">
+                        <div class="contact-label">Địa chỉ:</div>
+                        <div class="contact-value">Lam Sơn - Thanh Miện - Hải Dương</div>
                     </div>
                 </div>
 
-                <div class="thank-you-message">
-                    Cảm ơn quý khách đã gửi ý kiến. Chúng tôi sẽ phản hồi trong thời gian sớm nhất!
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-label">Điện thoại:</div>
+                        <div class="contact-value">0123 456 789</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-label">Email:</div>
+                        <div class="contact-value">thptthanhmien@gmail.com</div>
+                    </div>
+                </div>
+
+                <div class="notice-box">
+                    <p>Cảm ơn quý khách đã gửi ý kiến. Chúng tôi sẽ phản hồi trong thời gian sớm nhất!</p>
                 </div>
             </div>
 
-            <div class="contact-form-section fade-in">
-                <h2 class="section-title">Gửi liên hệ</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-                    Hoặc gửi liên hệ cho chúng tôi theo mẫu dưới đây:
-                </p>
-
-                <div class="success-message" id="successMessage">
-                    <i class="fas fa-check-circle"></i>
-                    Cảm ơn bạn đã gửi liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.
-                </div>
+            <div class="contact-form">
+                <h3 class="form-title">
+                    <i class="fas fa-paper-plane"></i>
+                    Gửi liên hệ
+                </h3>
+                <p class="form-subtitle">Hoặc gửi liên hệ cho chúng tôi theo mẫu dưới đây:</p>
 
                 <form id="contactForm">
                     <div class="form-group">
-                        <label for="name" class="form-label">Họ và tên *</label>
-                        <input type="text" id="name" name="name" class="form-control" placeholder="Nhập họ và tên của bạn" required>
+                        <label for="fullName" class="form-label">Họ và tên <span class="required">*</span></label>
+                        <input type="text" id="fullName" name="fullName" class="form-input" placeholder="Nhập họ và tên của bạn" required>
                     </div>
 
                     <div class="form-group">
                         <label for="address" class="form-label">Địa chỉ</label>
-                        <input type="text" id="address" name="address" class="form-control" placeholder="Nhập địa chỉ của bạn">
+                        <input type="text" id="address" name="address" class="form-input" placeholder="Nhập địa chỉ của bạn">
                     </div>
 
                     <div class="form-group">
-                        <label for="phone" class="form-label">Số điện thoại *</label>
-                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="Nhập số điện thoại" required>
+                        <label for="phone" class="form-label">Số điện thoại <span class="required">*</span></label>
+                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="Nhập số điện thoại" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="email" class="form-label">Thư điện tử *</label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="Nhập email của bạn" required>
+                        <label for="email" class="form-label">Thư điện tử <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="Nhập email của bạn" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="message" class="form-label">Nội dung liên hệ *</label>
-                        <textarea id="message" name="message" class="form-control" placeholder="Nhập nội dung bạn muốn gửi..." required></textarea>
+                        <label for="message" class="form-label">Nội dung liên hệ <span class="required">*</span></label>
+                        <textarea id="message" name="message" class="form-textarea" placeholder="Nhập nội dung bạn muốn gửi..." required></textarea>
                     </div>
 
-                    <div class="required-note">
+                    <div class="form-note">
                         Dấu * là phần không được để trống
                     </div>
 
@@ -470,46 +571,65 @@
                 </form>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        // Animation on scroll
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const navMenu = document.getElementById('nav-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                navMenu.classList.remove('active');
+            }
+        });
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.2 });
 
-        document.querySelectorAll('.fade-in').forEach((el) => {
-            observer.observe(el);
+        document.querySelectorAll('.fade-in').forEach((section) => {
+            observer.observe(section);
         });
 
-        // Form submission
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const successMessage = document.getElementById('successMessage');
-            const form = this;
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
             
-            // Show success message
-            successMessage.classList.add('show');
+            if (!data.fullName.trim() || !data.phone.trim() || !data.email.trim() || !data.message.trim()) {
+                alert('Vui lòng điền đầy đủ các trường bắt buộc!');
+                return;
+            }
             
-            // Reset form
-            form.reset();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(data.email)) {
+                alert('Vui lòng nhập email hợp lệ!');
+                return;
+            }
             
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                successMessage.classList.remove('show');
-            }, 5000);
+            const phoneRegex = /^[0-9]{10,11}$/;
+            if (!phoneRegex.test(data.phone.replace(/\s/g, ''))) {
+                alert('Vui lòng nhập số điện thoại hợp lệ!');
+                return;
+            }
+            
+            alert('Cảm ơn bạn đã gửi liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.');
+            
+            this.reset();
         });
 
-        // Phone number validation
-        document.getElementById('phone').addEventListener('input', function(e) {
-            let value = e.target.value;
-            value = value.replace(/\D/g, '');
-            e.target.value = value;
+        document.getElementById('message').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
         });
     </script>
 </body>

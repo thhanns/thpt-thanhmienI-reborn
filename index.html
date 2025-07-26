@@ -6,7 +6,6 @@
     <title>THPT Thanh Miện</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style/index.css">
     <style>
             :root {
             --primary-color: #2563eb;
@@ -147,7 +146,12 @@
 
         .hero {
             height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #2563eb 100%);
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
+                        url('/img/hero_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: scroll;
+            background-repeat: no-repeat;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -164,14 +168,10 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            animation: gridMove 30s linear infinite;
+            opacity: 0;
         }
 
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(10px, 10px); }
-        }
+
 
         .hero-particles {
             position: absolute;
@@ -224,8 +224,8 @@
             line-height: 1.1;
             background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .hero p {
@@ -237,6 +237,7 @@
             margin-left: auto;
             margin-right: auto;
             line-height: 1.6;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .cta-button {
@@ -307,17 +308,7 @@
             margin-right: auto;
         }
 
-        .section-title::after {
-            content: '';
-            position: absolute;
-            width: 100px;
-            height: 4px;
-            background: var(--gradient-accent);
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
+
 
         .features {
             display: grid;
@@ -764,6 +755,10 @@
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
+
+            .hero {
+                background-attachment: scroll;
+            }
         }
 
         .fade-in {
@@ -802,6 +797,8 @@
         .loading {
             animation: pulse 2s infinite;
         }
+
+
 </style>
     <link rel="icon" type="image" href="img/logo.png">
 </head>
@@ -887,10 +884,6 @@
             </div>
         </div>
     </section>
-                </div>
-            </div>
-        </div>
-    </section>
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
@@ -899,10 +892,10 @@
                 <p>&copy;THPT Thanh Miện. All rights reserved.</p>
             </div>
             <div class="footer-section">
-                <h3>Liên hệ Dev</h3>
-                <p><i class="fas fa-phone"></i> Điện thoại: Null</p>
-                <p><i class="fas fa-envelope"></i> Email: thhann.000@gmail.com</p>
-                <p><i class="fas fa-laptop-code"></i> Web Developer : Ann (SBD : 270001)</p>
+                <h3>Liên hệ</h3>
+                <p><i class="fas fa-phone"></i>0220 373 6980. Giờ làm việc: 07:00–17:00, nghỉ Thứ Bảy và Chủ Nhật</p>
+                <p><i class="fas fa-fax"></i>Mã số thuế: 0800510218 cấp ngày 14/01/2009 </p>
+                <p><i class="fas fa-location-arrow"></i>THPT Thanh Miện, địa chỉ tại xã Lam Sơn, Thị trấn Thanh Miện, huyện Thanh Miện, Hải Dương</p>
             </div>
             <div class="footer-section">
                 <h3>Kết nối với Dev :3</h3>
