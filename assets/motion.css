@@ -1,0 +1,318 @@
+/* ============================================================================
+   Motion
+   ---------------------------------------------------------------------------
+   Loads AFTER glass-ui.css. Everything here is choreography: how surfaces
+   arrive, how they answer the pointer, how the page hands over to the next one.
+   No layout, no colour, no new components except the two the script injects
+   (the scroll rail and the back to top button).
+
+   THE TRANSFORM CONTRACT
+   Three things want to move the same box at the same time, so each owns a
+   different property and they compose instead of overwriting each other:
+
+       translate / scale   the scroll reveal        (glass-ui.css)
+       transform           hover lift + pointer tilt (this file)
+       filter              never animated on a glass pane, see below
+
+   That split is not cosmetic. Before it, ".js-reveal .rise.is-in{transform:none}"
+   (three classes) outranked ".card:hover{transform:...}" (two), so every card
+   that had been revealed silently lost its hover lift. Keep new motion on its
+   own property rather than adding weight to a selector.
+
+   THE COST RULE
+   A moving backdrop makes every glass pane above it re-run three displacement
+   passes per frame. So nothing behind a pane loops forever: the aurora and the
+   hero photograph only drift while the hero is on screen, and everything else
+   here moves on hover, on reveal, or once. No idle animation below the fold.
+   ========================================================================= */
+
+:root{
+  /* decelerate hard, settle without bounce — arrivals */
+  --m-out:cubic-bezier(.16,.84,.44,1);
+  /* the stagger step between siblings; 70ms reads as one gesture, 120ms
+     reads as a queue of separate things */
+  --m-step:70ms;
+}
+
+/* ---------------------------------------------------------------------------
+   Reveal — direction per component
+
+   glass-ui.css owns the mechanism (opacity + translate + scale, gated behind
+   .js-reveal). These are the per surface dials, so no markup carries a
+   direction attribute. A list slides in from the leading edge, a sidebar from
+   the trailing one, stats scale up from slightly small.
+   ------------------------------------------------------------------------- */
+.sec-head{--rise-y:26px;}
+.stat    {--rise-y:16px;--rise-s:.93;}
+.card,
+.news-card,
+.info    {--rise-y:26px;--rise-s:.985;}
+.post    {--rise-x:-26px;--rise-y:0px;}
+.side-box{--rise-x:26px;--rise-y:0px;}
+.article,
+.contact-pane{--rise-y:20px;--rise-s:.99;}
+
+@media (max-width:960px){
+  /* single column: a sideways entrance has nothing to slide against */
+  .post,.side-box{--rise-x:0px;--rise-y:22px;}
+}
+
+/* the eyebrow rule draws itself once the block has landed */
+.eyebrow::before{transition:width .7s var(--m-out) .18s;}
+.js-reveal .rise .eyebrow::before{width:0;}
+.js-reveal .rise.is-in .eyebrow::before{width:22px;}
+
+/* ---------------------------------------------------------------------------
+   Hero — one choreographed arrival, on load rather than on scroll
+
+   The hero is above the fold on every load, so an observer would fire for it
+   in the same frame the page painted. Running it as a plain animation with a
+   delay is both cheaper and easier to time against the rest.
+
+   animation-fill-mode is BACKWARDS, not both: `both` would leave filter:blur(0)
+   applied forever, which pins a compositing layer under the glass card for the
+   rest of the session.
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion:no-preference){
+  .hero-card > *{animation:m-hero .95s var(--m-out) backwards;}
+  .hero-card > *:nth-child(1){animation-delay:.10s;}
+  .hero-card > *:nth-child(2){animation-delay:.20s;}
+  .hero-card > *:nth-child(3){animation-delay:.30s;}
+  .hero-card > *:nth-child(4){animation-delay:.42s;}
+
+  /* the frame itself unfolds under them */
+  .hero-frame{animation:m-frame 1.1s var(--m-out) backwards;}
+}
+@keyframes m-hero{
+  from{opacity:0;transform:translateY(22px);filter:blur(7px);}
+  to  {opacity:1;transform:none;filter:blur(0);}
+}
+@keyframes m-frame{
+  from{opacity:0;transform:translateY(16px) scale(.985);}
+  to  {opacity:1;transform:none;}
+}
+
+/* Slow push on the campus photograph. Only while the hero is actually on
+   screen — the script toggles .is-live — and only one pane sits above it, so
+   this is the one loop on the site that is worth its repaint. */
+.hero-frame img{transform-origin:52% 42%;}
+.hero.is-live .hero-frame img{animation:m-ken 34s var(--ease) infinite alternate;}
+@keyframes m-ken{
+  from{transform:scale(1.015) translate3d(0,0,0);}
+  to  {transform:scale(1.10) translate3d(-1.6%,-1.4%,0);}
+}
+
+/* The inner pages open on a heading rather than on a photograph, so it gets
+   the same arrival. Not a .rise: it is above the fold on every load, and an
+   observer would only fire for it after the first paint had already shown it. */
+@media (prefers-reduced-motion:no-preference){
+  .page-head > *,
+  .crumb{animation:m-hero .85s var(--m-out) backwards;}
+  .page-head > *:nth-child(1),.crumb{animation-delay:.08s;}
+  .page-head > *:nth-child(2){animation-delay:.18s;}
+  .page-head > *:nth-child(3){animation-delay:.28s;}
+}
+
+/* ---------------------------------------------------------------------------
+   Navigation
+   ------------------------------------------------------------------------- */
+/* `translate` is free here because the capsule centres itself with
+   transform:translateX(-50%); the two compose. */
+.nav{
+  transition:
+    top .45s var(--ease),
+    padding .45s var(--ease),
+    translate .5s var(--ease),
+    opacity .3s var(--ease);
+}
+/* out of the way while reading downward, back the moment you scroll up */
+.nav.is-away{translate:0 -155%;opacity:0;}
+
+.brand img{transition:transform .55s var(--spring);}
+.brand:hover img{transform:rotate(-7deg) scale(1.08);}
+
+/* a hairline that grows from the centre, under the existing pill hover */
+.nav-links a::after{
+  content:"";
+  position:absolute;
+  left:50%;bottom:5px;
+  width:0;height:2px;border-radius:2px;
+  translate:-50% 0;
+  background:linear-gradient(90deg,var(--sky),var(--aqua));
+  transition:width .4s var(--spring);
+}
+.nav-links a:hover::after{width:20px;}
+.nav-links a.is-here::after{width:26px;}
+@media (max-width:900px){
+  /* stacked sheet: the pill background carries the state on its own */
+  .nav-links a::after{display:none;}
+  /* each row falls in behind the one above it */
+  .nav.is-open .nav-links a{animation:m-sheet .5s var(--m-out) backwards;}
+  .nav.is-open .nav-links a:nth-child(1){animation-delay:.04s;}
+  .nav.is-open .nav-links a:nth-child(2){animation-delay:.08s;}
+  .nav.is-open .nav-links a:nth-child(3){animation-delay:.12s;}
+  .nav.is-open .nav-links a:nth-child(4){animation-delay:.16s;}
+  .nav.is-open .nav-links a:nth-child(5){animation-delay:.20s;}
+}
+@keyframes m-sheet{
+  from{opacity:0;transform:translateY(-8px);}
+  to  {opacity:1;transform:none;}
+}
+
+.nav-cta i{transition:transform .5s var(--spring);}
+.nav-cta:hover i{transform:translateY(-1px) scale(1.12);}
+
+/* Reading progress. A 3px rail at the very top, above the capsule, scaled
+   rather than resized so it never triggers layout. */
+.m-rail{
+  position:fixed;
+  top:0;left:0;right:0;
+  height:3px;
+  z-index:950;
+  pointer-events:none;
+  transform:scaleX(var(--m-p,0));
+  transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--sky),var(--aqua) 55%,var(--sky-2));
+  opacity:var(--m-rail-o,0);
+  transition:opacity .35s var(--ease);
+}
+
+/* ---------------------------------------------------------------------------
+   Panes — lift and tilt
+
+   One transform per surface, assembled from custom properties so the hover
+   lift and the pointer tilt never fight over the declaration. The script only
+   ever writes --rx/--ry; CSS owns the rest.
+   ------------------------------------------------------------------------- */
+.card,.news-card,.info,.stat,.post,.side-box{
+  transform:
+    perspective(1100px)
+    translate3d(var(--tx,0),var(--lift,0),0)
+    rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transition:transform .55s var(--spring);
+}
+.stat:hover    {--lift:-5px;}
+.info:hover    {--lift:-4px;}
+.side-box:hover{--lift:-4px;}
+
+/* While the pointer is inside, the pane tracks it directly: a spring here
+   would lag the cursor by a third of a second and read as lag, not as glass.
+   The spring comes back on the way out, which is where it belongs. */
+.m-tilting{transition:transform .1s linear;will-change:transform;}
+
+.card-icon,.post-ico,.info-head i,.contact-row i{
+  transition:transform .6s var(--spring),box-shadow .4s var(--ease);
+}
+.card:hover .card-icon{transform:translateY(-3px) rotate(-6deg) scale(1.07);}
+.post:hover .post-ico{transform:rotate(-5deg) scale(1.06);}
+.info li:hover::before{animation:m-dot .6s var(--spring);}
+@keyframes m-dot{
+  0%{transform:scale(1);} 45%{transform:scale(1.75);} 100%{transform:scale(1);}
+}
+
+/* news thumbnails: the glyph pushes forward, the band deepens */
+.news-thumb i{transition:transform .65s var(--spring);}
+.news-card:hover .news-thumb i{transform:scale(1.14) rotate(-7deg);}
+.news-thumb::after{transition:opacity .5s var(--ease);}
+.news-card:hover .news-thumb::after{opacity:.55;}
+.tag{transition:background .35s var(--ease),color .35s var(--ease);}
+.news-card:hover .tag{background:color-mix(in srgb,var(--sky) 30%,transparent);color:var(--ink);}
+
+/* rows on the news index and the sidebar lists */
+.side-box li{transition:color .25s,transform .4s var(--m-out);}
+.side-box li:hover{transform:translateX(4px);}
+.contact-row{transition:transform .45s var(--m-out);}
+.contact-row:hover{transform:translateX(4px);}
+.contact-row:hover i{transform:rotate(-6deg) scale(1.07);}
+
+/* ---------------------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------------------- */
+.btn,.nav-cta,.side-cta{position:relative;overflow:hidden;}
+.btn i,.side-cta i{transition:transform .45s var(--spring);}
+.btn:hover i,.side-cta:hover i{transform:translateX(4px);}
+/* the paper plane on the contact form flies up rather than right */
+.btn:hover .fa-paper-plane{transform:translate(3px,-3px) rotate(-8deg);}
+
+/* Click ripple. The script places one span at the pointer and lets it expire;
+   z-index 4 clears the glass rim at 3 so it is not painted underneath it. */
+.m-rip{
+  position:absolute;
+  z-index:4;
+  border-radius:50%;
+  pointer-events:none;
+  background:radial-gradient(circle,rgba(255,255,255,.55),rgba(255,255,255,0) 70%);
+  animation:m-rip .62s var(--m-out) forwards;
+}
+@keyframes m-rip{
+  from{transform:translate(-50%,-50%) scale(0);opacity:.9;}
+  to  {transform:translate(-50%,-50%) scale(1);opacity:0;}
+}
+
+.socials a i{transition:transform .5s var(--spring);}
+.socials a:hover i{transform:scale(1.15);}
+
+/* form feedback slides in rather than appearing */
+#formSays{animation:m-says .45s var(--m-out);}
+@keyframes m-says{
+  from{opacity:0;transform:translateY(-6px);}
+  to  {opacity:1;transform:none;}
+}
+
+/* ---------------------------------------------------------------------------
+   Back to top
+   ------------------------------------------------------------------------- */
+.m-top{
+  position:fixed;
+  right:clamp(14px,3vw,26px);
+  bottom:clamp(14px,3vw,26px);
+  z-index:880;
+  width:48px;height:48px;
+  border:0;border-radius:999px;
+  display:grid;place-items:center;
+  color:var(--ink);
+  font-size:15px;
+  cursor:pointer;
+  opacity:0;
+  translate:0 14px;
+  scale:.85;
+  pointer-events:none;
+  transition:opacity .4s var(--ease),translate .55s var(--spring),scale .55s var(--spring),transform .5s var(--spring);
+}
+.m-top.is-on{opacity:1;translate:none;scale:1;pointer-events:auto;}
+.m-top:hover{transform:translateY(-3px);}
+.m-top:active{transform:scale(.94);}
+
+/* ---------------------------------------------------------------------------
+   Page handover
+
+   A veil rather than a fade on <body>: an element with opacity below 1 clips
+   the backdrop of every descendant, so fading the body would strip the glass
+   off the whole page for the length of the transition. The veil is a sibling,
+   so the panes keep their backdrop right up to the navigation.
+   ------------------------------------------------------------------------- */
+.m-veil{
+  position:fixed;
+  inset:0;
+  z-index:2000;
+  background:var(--ground);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .24s var(--ease);
+}
+html.is-leaving .m-veil{opacity:1;}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion
+
+   glass-ui.css already collapses every duration site wide; this removes the
+   things that would still read as movement at a near zero duration, and the
+   script skips tilt, ripple, parallax and the counters entirely.
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  .hero.is-live .hero-frame img{animation:none;}
+  .nav.is-away{translate:none;opacity:1;}
+  .m-rip{display:none;}
+  .m-veil{display:none;}
+  .js-reveal .rise .eyebrow::before{width:22px;}
+}

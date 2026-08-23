@@ -1,0 +1,809 @@
+/* ============================================================================
+   THPT Thanh Miện — Glass UI
+   ---------------------------------------------------------------------------
+   The page design. Loads AFTER liquid-glass.css so it can tune the material
+   per surface. liquid-glass.css owns the material (tint, bevel, rim, press);
+   this file owns the ground, the type, the layout and every component.
+
+   Ground: the school's own campus photograph, blurred for colour, layered
+   with aurora fields and a fine 1px rule. The rule matters — refraction is
+   invisible over a soft gradient because there is nothing in it to bend.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------------------
+   Tokens
+   ------------------------------------------------------------------------- */
+:root{
+  --ground:#E9EEF9;
+  --ground-2:#DCE4F4;
+  --ink:#0B1020;
+  --ink-2:#414A63;
+  --ink-3:#727B94;
+  --hair:rgba(11,16,32,.12);
+  --hair-2:rgba(11,16,32,.06);
+
+  /* the school's blue stays the identity anchor */
+  --sky:#2563EB;
+  --sky-2:#3B82F6;
+  --aqua:#06B6D4;
+  --leaf:#10B981;
+  --ochre:#F59E0B;
+  --rose:#F43F5E;
+
+  --on-accent:#fff;
+  --aurora-a:.26;
+  --photo-a:.16;
+  --grid-a:1;
+
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --display:'Be Vietnam Pro','Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  /* JetBrains Mono first, and it must stay first: the system monospace fonts
+     below (SF Mono, Consolas) have no Vietnamese diacritics, so every label
+     set in --mono fell back per character and rendered half mono, half
+     whatever the browser found for ớ ệ ự ậ. */
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono','Cascadia Mono',Consolas,monospace;
+
+  --wrap:1180px;
+  --gut:clamp(18px,4vw,40px);
+  --r-lg:32px;
+  --r-md:24px;
+  --r-sm:16px;
+  --spring:cubic-bezier(.2,1.4,.35,1);
+  --ease:cubic-bezier(.22,.8,.28,1);
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#070B14;
+    --ground-2:#0C1220;
+    --ink:#EEF2FC;
+    --ink-2:#9AA4BE;
+    --ink-3:#6B7590;
+    --hair:rgba(255,255,255,.14);
+    --hair-2:rgba(255,255,255,.06);
+    --sky:#7CA0FF;
+    --sky-2:#5B84F5;
+    --aqua:#22D3EE;
+    --leaf:#34D399;
+    --ochre:#FBBF24;
+    --rose:#FB7185;
+    --on-accent:#080C16;
+    --aurora-a:.42;
+    --photo-a:.16;
+
+    --lg-tint:.06;
+    --lg-bright:.80;
+    --lg-bright-dense:.44;
+    --lg-rim-hi:rgba(255,255,255,.92);
+    --lg-rim-mid:rgba(255,255,255,.28);
+    --lg-rim-lo:rgba(255,255,255,.07);
+    --lg-inner:rgba(255,255,255,.32);
+    --lg-sheen-c:rgba(255,255,255,.22);
+    --lg-shade:rgba(0,0,0,.62);
+  }
+}
+/* KEEP IN SYNC with the block above: the media query covers the unstamped
+   "system" state, this covers an explicit choice. */
+:root[data-theme="dark"]{
+  --ground:#070B14;
+  --ground-2:#0C1220;
+  --ink:#EEF2FC;
+  --ink-2:#9AA4BE;
+  --ink-3:#6B7590;
+  --hair:rgba(255,255,255,.14);
+  --hair-2:rgba(255,255,255,.06);
+  --sky:#7CA0FF;
+  --sky-2:#5B84F5;
+  --aqua:#22D3EE;
+  --leaf:#34D399;
+  --ochre:#FBBF24;
+  --rose:#FB7185;
+  --on-accent:#080C16;
+  --aurora-a:.42;
+  --photo-a:.16;
+
+  --lg-tint:.06;
+  --lg-bright:.80;
+  --lg-bright-dense:.44;
+  --lg-rim-hi:rgba(255,255,255,.92);
+  --lg-rim-mid:rgba(255,255,255,.28);
+  --lg-rim-lo:rgba(255,255,255,.07);
+  --lg-inner:rgba(255,255,255,.32);
+  --lg-sheen-c:rgba(255,255,255,.22);
+  --lg-shade:rgba(0,0,0,.62);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------------- */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.65;
+  color:var(--ink);
+  background:var(--ground);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+ul{list-style:none;}
+button,input,textarea,select{font:inherit;color:inherit;}
+:focus-visible{outline:2.5px solid var(--sky);outline-offset:3px;border-radius:6px;}
+::selection{background:color-mix(in srgb,var(--sky) 30%,transparent);}
+
+h1,h2,h3,h4{
+  font-family:var(--display);
+  font-weight:800;
+  /* 1.3, not the 1.08 a Latin display face would take. Vietnamese stacks a
+     tone mark on top of a circumflex or breve and hangs a dot underneath, so
+     in Be Vietnam Pro the ink runs from +1.02em (ẳ) to -0.25em (ạ), so 1.27em
+     for sentence case, against 0.99em for Latin. At 1.08 the dot under one
+     line collided with the marks over the next, visible as soon as a heading
+     wrapped: "Về Trường THPT Thanh Miện" overlapped by 3px.
+     Measure before lowering this. All-caps Vietnamese would need 1.48 (Ẳ
+     alone ascends 1.23em), so give a shouty heading its own line-height. */
+  line-height:1.3;
+  letter-spacing:-.035em;
+  text-wrap:balance;
+}
+
+/* ---------------------------------------------------------------------------
+   The ground
+   ------------------------------------------------------------------------- */
+.ground{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none;}
+.ground > *{position:absolute;}
+
+/* the campus itself, blurred to colour rather than to picture */
+.g-photo{
+  inset:-8%;
+  background:url("../img/hero_bg.png") center/cover no-repeat;
+  filter:blur(70px) saturate(150%);
+  opacity:var(--photo-a);
+}
+.g-aurora{inset:-20%;opacity:var(--aurora-a);}
+.g-aurora i{
+  position:absolute;
+  display:block;
+  border-radius:50%;
+  filter:blur(70px);
+}
+/* Blue dominant with one warm accent and plenty of neutral between. Four
+   equally loud hues read as a stock rainbow mesh rather than as a ground. */
+.g-aurora i:nth-child(1){width:60vw;height:60vw;left:-14%;top:-14%;background:var(--sky);}
+.g-aurora i:nth-child(2){width:46vw;height:46vw;right:-12%;top:-4%;background:#7C9BF5;opacity:.75;}
+.g-aurora i:nth-child(3){width:52vw;height:52vw;left:12%;bottom:-22%;background:#6E7FE8;opacity:.6;}
+.g-aurora i:nth-child(4){width:26vw;height:26vw;right:10%;bottom:2%;background:var(--ochre);opacity:.42;}
+
+/* Motion runs ONLY while the hero is on screen. A drifting backdrop forces
+   every glass surface above it to re-run its displacement passes each frame,
+   so below the fold, where the panes are many, the ground goes still. */
+.ground.is-live .g-aurora i{animation:drift 26s var(--ease) infinite alternate;}
+.ground.is-live .g-aurora i:nth-child(2){animation-duration:32s;animation-delay:-6s;}
+.ground.is-live .g-aurora i:nth-child(3){animation-duration:38s;animation-delay:-12s;}
+.ground.is-live .g-aurora i:nth-child(4){animation-duration:30s;animation-delay:-3s;}
+@keyframes drift{
+  from{transform:translate3d(0,0,0) scale(1);}
+  to  {transform:translate3d(6%,-5%,0) scale(1.18);}
+}
+
+/* the crisp part: without this the refraction has nothing to bend */
+.g-grid{
+  inset:0;
+  opacity:var(--grid-a);
+  background-image:
+    linear-gradient(to right,var(--hair-2) 1px,transparent 1px),
+    linear-gradient(to bottom,var(--hair-2) 1px,transparent 1px),
+    linear-gradient(to right,var(--hair) 1px,transparent 1px),
+    linear-gradient(to bottom,var(--hair) 1px,transparent 1px);
+  background-size:28px 28px,28px 28px,140px 140px,140px 140px;
+  -webkit-mask:radial-gradient(130% 100% at 50% 0%,#000 20%,rgba(0,0,0,.45) 70%,transparent 100%);
+  mask:radial-gradient(130% 100% at 50% 0%,#000 20%,rgba(0,0,0,.45) 70%,transparent 100%);
+}
+.g-veil{
+  inset:0;
+  background:
+    radial-gradient(75% 55% at 50% 46%,
+      color-mix(in srgb,var(--ground) 78%,transparent) 0%,
+      color-mix(in srgb,var(--ground) 40%,transparent) 55%,
+      transparent 100%),
+    linear-gradient(180deg,
+      color-mix(in srgb,var(--ground) 62%,transparent) 0%,
+      color-mix(in srgb,var(--ground) 22%,transparent) 20%,
+      color-mix(in srgb,var(--ground) 30%,transparent) 72%,
+      color-mix(in srgb,var(--ground) 80%,transparent) 100%);
+}
+
+/* ---------------------------------------------------------------------------
+   Layout
+   ------------------------------------------------------------------------- */
+.wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:var(--gut);}
+.sec{padding-block:clamp(64px,9vw,120px);}
+.sec-head{margin-bottom:clamp(34px,5vw,56px);max-width:62ch;}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  margin-bottom:16px;
+}
+.eyebrow::before{
+  content:"";
+  width:22px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,var(--sky),var(--aqua));
+}
+.sec-head h2{font-size:clamp(30px,4.6vw,50px);margin-bottom:16px;}
+.sec-head p{color:var(--ink-2);font-size:clamp(15px,1.5vw,17.5px);max-width:58ch;}
+.grid{display:grid;gap:clamp(16px,2vw,22px);}
+.g-3{grid-template-columns:repeat(auto-fit,minmax(290px,1fr));}
+.g-4{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));}
+.g-2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));}
+
+/* ---------------------------------------------------------------------------
+   Navigation — a floating capsule, so the ground shows around it
+   ------------------------------------------------------------------------- */
+.nav{
+  position:fixed;
+  top:16px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:900;
+  width:min(var(--wrap),calc(100vw - 28px));
+  border-radius:999px;
+  padding:9px 9px 9px 20px;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  transition:top .45s var(--ease),padding .45s var(--ease);
+}
+.nav.is-stuck{top:10px;padding-block:7px;}
+.brand{
+  display:flex;align-items:center;gap:11px;
+  font-family:var(--display);font-weight:800;font-size:16.5px;
+  letter-spacing:-.03em;white-space:nowrap;
+}
+.brand img{width:30px;height:30px;border-radius:9px;object-fit:cover;}
+.nav-links{display:flex;align-items:center;gap:4px;margin-left:auto;}
+.nav-links a{
+  position:relative;
+  padding:9px 15px;
+  border-radius:999px;
+  font-size:14.5px;
+  font-weight:500;
+  color:var(--ink-2);
+  transition:color .25s,background .25s;
+  white-space:nowrap;
+}
+.nav-links a:hover{color:var(--ink);background:rgba(255,255,255,.30);}
+.nav-links a.is-here{color:var(--ink);background:rgba(255,255,255,.42);}
+:root[data-theme="dark"] .nav-links a:hover,
+:root[data-theme="dark"] .nav-links a.is-here{background:rgba(255,255,255,.12);}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .nav-links a:hover,
+  :root:not([data-theme="light"]) .nav-links a.is-here{background:rgba(255,255,255,.12);}
+}
+
+.nav-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:999px;
+  background:linear-gradient(135deg,var(--sky),var(--sky-2));
+  color:var(--on-accent);
+  font-size:14px;font-weight:600;
+  box-shadow:0 6px 18px -6px color-mix(in srgb,var(--sky) 70%,transparent);
+  border:0;cursor:pointer;
+  transition:transform .4s var(--spring),box-shadow .3s;
+}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 12px 26px -8px color-mix(in srgb,var(--sky) 75%,transparent);}
+.nav-cta:active{transform:scale(.96);}
+
+.burger{
+  display:none;
+  width:42px;height:42px;border-radius:999px;
+  border:0;background:rgba(255,255,255,.34);
+  cursor:pointer;
+  align-items:center;justify-content:center;
+  margin-left:auto;
+  color:var(--ink);
+}
+.burger span{display:block;width:17px;height:1.8px;background:currentColor;border-radius:2px;position:relative;transition:transform .35s var(--ease);}
+.burger span::before,.burger span::after{
+  content:"";position:absolute;left:0;width:17px;height:1.8px;background:currentColor;border-radius:2px;
+  transition:transform .35s var(--ease),top .35s var(--ease);
+}
+.burger span::before{top:-6px;}
+.burger span::after{top:6px;}
+.nav.is-open .burger span{transform:rotate(45deg);}
+.nav.is-open .burger span::before{top:0;transform:rotate(-90deg);}
+.nav.is-open .burger span::after{top:0;opacity:0;}
+
+@media (max-width:900px){
+  .nav{flex-wrap:wrap;border-radius:26px;padding:10px 10px 10px 18px;}
+  .burger{display:inline-flex;}
+  .nav-links{
+    order:3;width:100%;flex-direction:column;align-items:stretch;gap:2px;
+    margin:0;overflow:hidden;
+    max-height:0;opacity:0;
+    transition:max-height .45s var(--ease),opacity .3s,margin .45s var(--ease);
+  }
+  .nav.is-open .nav-links{max-height:60vh;opacity:1;margin-top:10px;}
+  .nav-links a{padding:13px 16px;border-radius:14px;font-size:15.5px;}
+  .nav-cta{order:2;}
+}
+@media (max-width:520px){
+  .brand span{display:none;}
+  .nav-cta span{display:none;}
+  .nav-cta{padding:10px 13px;}
+}
+
+/* ---------------------------------------------------------------------------
+   Hero
+   ------------------------------------------------------------------------- */
+.hero{
+  position:relative;
+  padding-top:clamp(104px,13vw,140px);
+  padding-bottom:clamp(40px,6vw,72px);
+}
+.hero-frame{
+  position:relative;
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  min-height:clamp(430px,66vh,640px);
+  display:flex;
+  align-items:flex-end;
+  padding:clamp(20px,3vw,34px);
+  box-shadow:0 40px 90px -40px rgba(11,16,32,.55);
+  isolation:isolate;
+}
+.hero-frame img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;z-index:-2;
+}
+.hero-frame::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(190deg,rgba(6,10,22,.16) 0%,rgba(6,10,22,.48) 55%,rgba(6,10,22,.74) 100%);
+}
+.hero-card{
+  padding:clamp(24px,3.4vw,40px);
+  border-radius:var(--r-md);
+  max-width:660px;
+  color:#fff;
+}
+.hero-card .eyebrow{color:rgba(255,255,255,.82);}
+.hero-card .eyebrow::before{background:linear-gradient(90deg,#fff,rgba(255,255,255,.35));}
+.hero-card h1{
+  font-size:clamp(32px,5.6vw,60px);
+  letter-spacing:-.045em;
+  margin-bottom:16px;
+  text-shadow:0 2px 26px rgba(6,10,22,.4);
+}
+.hero-card p{
+  font-size:clamp(15px,1.6vw,18px);
+  color:rgba(255,255,255,.90);
+  margin-bottom:26px;
+  max-width:48ch;
+  text-shadow:0 1px 14px rgba(6,10,22,.45);
+}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;}
+
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 26px;border-radius:999px;
+  font-size:15px;font-weight:600;
+  border:0;cursor:pointer;
+  transition:transform .45s var(--spring),box-shadow .3s;
+}
+.btn-solid{
+  background:linear-gradient(135deg,var(--sky),var(--sky-2));
+  color:var(--on-accent);
+  box-shadow:0 12px 30px -10px color-mix(in srgb,var(--sky) 78%,transparent);
+}
+.btn-solid:hover{transform:translateY(-3px);box-shadow:0 20px 40px -12px color-mix(in srgb,var(--sky) 80%,transparent);}
+.btn-glass{color:#fff;}
+.btn-glass:hover{transform:translateY(-3px);}
+
+/* ---------------------------------------------------------------------------
+   Stats
+   ------------------------------------------------------------------------- */
+.stat{
+  padding:clamp(22px,2.6vw,30px) clamp(16px,2vw,24px);
+  border-radius:var(--r-md);
+  text-align:center;
+}
+.stat b{
+  display:block;
+  font-family:var(--display);
+  font-size:clamp(30px,4.2vw,44px);
+  font-weight:800;
+  letter-spacing:-.045em;
+  line-height:1;
+  background:linear-gradient(135deg,var(--sky),var(--aqua));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  font-variant-numeric:tabular-nums;
+}
+.stat span{
+  display:block;margin-top:9px;
+  font-size:13.5px;font-weight:500;color:var(--ink-2);
+}
+
+/* ---------------------------------------------------------------------------
+   Cards
+   ------------------------------------------------------------------------- */
+.card{
+  padding:clamp(24px,2.8vw,32px);
+  border-radius:var(--r-md);
+  display:flex;flex-direction:column;gap:13px;
+  height:100%;
+  transition:transform .5s var(--spring);
+}
+/* Lift through a variable, never through a bare transform on :hover — the
+   pane's transform is assembled once in motion.css out of --lift, --tx and the
+   tilt angles, and a second transform declaration here would replace all of it. */
+.card:hover{--lift:-6px;}
+.card h3{font-size:19.5px;letter-spacing:-.025em;line-height:1.3;}
+.card p{color:var(--ink-2);font-size:14.8px;line-height:1.62;}
+.card-icon{
+  width:52px;height:52px;border-radius:16px;
+  display:grid;place-items:center;
+  font-size:21px;color:#fff;
+  box-shadow:0 8px 20px -8px rgba(11,16,32,.5),inset 0 1px 0 rgba(255,255,255,.4);
+  margin-bottom:4px;
+}
+.i-sky  {background:linear-gradient(150deg,#5B8DEF,#2563EB);}
+.i-aqua {background:linear-gradient(150deg,#38D6EE,#0891B2);}
+.i-leaf {background:linear-gradient(150deg,#4ADE9F,#059669);}
+.i-ochre{background:linear-gradient(150deg,#FCD34D,#D97706);}
+.i-rose {background:linear-gradient(150deg,#FB7185,#E11D48);}
+
+/* news */
+.news-card{
+  padding:0;overflow:hidden;
+  border-radius:var(--r-md);
+  display:flex;flex-direction:column;
+  transition:transform .5s var(--spring);
+}
+.news-card:hover{--lift:-6px;}
+.news-thumb{
+  height:158px;
+  display:grid;place-items:center;
+  font-size:36px;color:#fff;
+  position:relative;
+}
+.news-thumb::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 40%,rgba(6,10,22,.28));
+}
+.news-body{padding:22px 24px 26px;display:flex;flex-direction:column;gap:10px;flex:1;}
+.tag{
+  align-self:flex-start;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  padding:5px 11px;border-radius:999px;
+  background:color-mix(in srgb,var(--sky) 16%,transparent);
+  color:var(--ink-2);
+}
+.news-body h3{font-size:17px;line-height:1.35;letter-spacing:-.02em;}
+.news-body p{color:var(--ink-2);font-size:14.2px;line-height:1.6;flex:1;}
+.news-meta{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:11px;color:var(--ink-3);
+  letter-spacing:.04em;
+}
+
+/* info lists */
+.info{padding:clamp(22px,2.6vw,30px);border-radius:var(--r-md);}
+.info-head{
+  display:flex;align-items:center;gap:12px;
+  padding-bottom:16px;margin-bottom:6px;
+  border-bottom:1px solid var(--hair-2);
+  font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.02em;
+}
+.info-head i{
+  width:38px;height:38px;border-radius:12px;
+  display:grid;place-items:center;color:#fff;font-size:15px;flex:none;
+}
+.pill-new{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+  padding:4px 9px;border-radius:999px;
+  background:var(--rose);color:#fff;margin-left:auto;
+}
+.info li{
+  padding:13px 0 13px 22px;
+  position:relative;
+  font-size:14.6px;color:var(--ink-2);
+  border-bottom:1px solid var(--hair-2);
+  transition:color .25s,padding-left .3s var(--ease);
+}
+.info li:last-child{border-bottom:0;}
+.info li::before{
+  content:"";position:absolute;left:2px;top:21px;
+  width:6px;height:6px;border-radius:50%;
+  background:linear-gradient(135deg,var(--sky),var(--aqua));
+}
+.info li:hover{color:var(--ink);padding-left:27px;}
+
+/* ---------------------------------------------------------------------------
+   News index page
+   ------------------------------------------------------------------------- */
+.page-head{padding-top:clamp(112px,14vw,150px);padding-bottom:clamp(24px,4vw,44px);}
+.page-head h1{font-size:clamp(32px,5.4vw,56px);margin-bottom:14px;}
+.page-head p{color:var(--ink-2);font-size:clamp(15px,1.6vw,18px);max-width:56ch;}
+
+.split{display:grid;gap:clamp(20px,2.6vw,32px);grid-template-columns:minmax(0,1fr) 340px;align-items:start;}
+@media (max-width:960px){.split{grid-template-columns:minmax(0,1fr);}}
+
+.post{
+  display:flex;gap:20px;align-items:flex-start;
+  padding:22px clamp(18px,2.4vw,26px);
+  border-radius:var(--r-md);
+  transition:transform .45s var(--spring);
+}
+.post:hover{--tx:5px;}
+.post-ico{
+  width:52px;height:52px;border-radius:16px;flex:none;
+  display:grid;place-items:center;color:#fff;font-size:19px;
+  box-shadow:0 8px 18px -8px rgba(11,16,32,.5),inset 0 1px 0 rgba(255,255,255,.4);
+}
+.post-main{display:flex;flex-direction:column;gap:8px;min-width:0;}
+.post-main h3{font-size:17px;line-height:1.38;letter-spacing:-.02em;}
+.post-main p{color:var(--ink-2);font-size:14.2px;}
+.post-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:2px;}
+
+.side{display:flex;flex-direction:column;gap:clamp(16px,2vw,20px);position:sticky;top:104px;}
+@media (max-width:960px){.side{position:static;}}
+.side-box{padding:24px;border-radius:var(--r-md);}
+.side-box h4{
+  font-size:12px;font-family:var(--mono);font-weight:400;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+  margin-bottom:16px;
+}
+.side-box li{
+  padding:12px 0;border-bottom:1px solid var(--hair-2);
+  font-size:14.2px;color:var(--ink-2);line-height:1.5;
+  transition:color .25s;
+}
+.side-box li:last-child{border-bottom:0;}
+.side-box li:hover{color:var(--sky);}
+.side-cta{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:14px;padding:12px 18px;border-radius:999px;
+  background:linear-gradient(135deg,var(--sky),var(--sky-2));
+  color:var(--on-accent);font-size:14px;font-weight:600;
+  transition:transform .4s var(--spring);
+}
+.side-cta:hover{transform:translateY(-2px);}
+
+/* ---------------------------------------------------------------------------
+   Article
+   ------------------------------------------------------------------------- */
+.crumb{
+  display:flex;flex-wrap:wrap;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-3);
+  letter-spacing:.06em;margin-bottom:22px;
+}
+.crumb a:hover{color:var(--sky);}
+.crumb i{opacity:.5;font-size:9px;}
+
+.article{padding:clamp(26px,3.4vw,52px);border-radius:var(--r-lg);}
+.article-head{padding-bottom:26px;margin-bottom:30px;border-bottom:1px solid var(--hair);}
+.article-head h1{font-size:clamp(26px,4vw,42px);margin-bottom:16px;letter-spacing:-.04em;}
+.article-sub{color:var(--ink-2);font-size:clamp(15px,1.6vw,17.5px);}
+.article-meta{
+  display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:20px;
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.05em;
+}
+.article-meta span{display:inline-flex;align-items:center;gap:7px;}
+.prose{max-width:70ch;}
+.prose p{margin-bottom:19px;color:var(--ink-2);font-size:16px;line-height:1.78;}
+.prose h2{font-size:clamp(20px,2.4vw,26px);margin:38px 0 16px;letter-spacing:-.03em;}
+.prose h3{font-size:18px;margin:28px 0 12px;letter-spacing:-.02em;}
+/* 700, not 650: Inter is loaded as static instances (400/500/600/700), so a
+   650 request has no matching face and snaps to 700 anyway. */
+.prose strong{color:var(--ink);font-weight:700;}
+.prose a{color:var(--sky);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;}
+.prose ul{margin:0 0 19px;display:flex;flex-direction:column;gap:11px;}
+.prose ul li{
+  position:relative;padding-left:22px;
+  color:var(--ink-2);font-size:15.6px;line-height:1.72;
+}
+.prose ul li::before{
+  content:"";position:absolute;left:2px;top:11px;
+  width:6px;height:6px;border-radius:50%;
+  background:linear-gradient(135deg,var(--sky),var(--aqua));
+}
+.callout{
+  padding:22px 26px;border-radius:var(--r-sm);
+  margin:26px 0;
+  border-left:3px solid var(--sky);
+}
+.callout p{margin:0;color:var(--ink-2);font-size:15.4px;}
+.callout p + p{margin-top:12px;}
+.sign{
+  margin-top:38px;padding-top:26px;border-top:1px solid var(--hair);
+  text-align:right;
+}
+.sign em{display:block;color:var(--ink-3);font-size:14px;font-style:italic;margin-bottom:10px;}
+.sign b{display:block;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);}
+.sign strong{display:block;font-family:var(--display);font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:6px;}
+
+/* ---------------------------------------------------------------------------
+   Contact
+   ------------------------------------------------------------------------- */
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.field label{font-size:13.5px;font-weight:600;color:var(--ink-2);}
+.field label b{color:var(--rose);font-weight:600;}
+.field input,.field textarea{
+  width:100%;
+  padding:14px 17px;
+  border-radius:var(--r-sm);
+  border:1px solid var(--hair);
+  background:rgba(255,255,255,.42);
+  font-size:15px;
+  transition:border-color .25s,box-shadow .25s,background .25s;
+}
+:root[data-theme="dark"] .field input,:root[data-theme="dark"] .field textarea{background:rgba(255,255,255,.05);}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .field input,
+  :root:not([data-theme="light"]) .field textarea{background:rgba(255,255,255,.05);}
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--ink-3);}
+.field input:focus,.field textarea:focus{
+  outline:0;
+  border-color:var(--sky);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--sky) 18%,transparent);
+}
+.field textarea{resize:vertical;min-height:130px;}
+.form-note{font-size:12.5px;color:var(--ink-3);font-style:italic;}
+.contact-row{
+  display:flex;align-items:flex-start;gap:15px;
+  padding:16px 0;border-bottom:1px solid var(--hair-2);
+}
+.contact-row:last-of-type{border-bottom:0;}
+.contact-row i{
+  width:42px;height:42px;border-radius:13px;flex:none;
+  display:grid;place-items:center;color:#fff;font-size:15px;
+  box-shadow:0 8px 18px -8px rgba(11,16,32,.5),inset 0 1px 0 rgba(255,255,255,.4);
+}
+.contact-row div{min-width:0;}
+.contact-row b{display:block;font-size:13px;color:var(--ink-3);font-weight:600;margin-bottom:3px;}
+.contact-row span{font-size:15.5px;color:var(--ink);word-break:break-word;}
+.notice{
+  padding:18px 22px;border-radius:var(--r-sm);
+  border-left:3px solid var(--leaf);
+  font-size:14.4px;color:var(--ink-2);font-style:italic;
+  margin-top:20px;
+}
+
+/* ---------------------------------------------------------------------------
+   Footer
+   ------------------------------------------------------------------------- */
+.foot{margin-top:clamp(48px,7vw,90px);padding-bottom:34px;}
+.foot-inner{
+  padding:clamp(28px,3.4vw,46px);
+  border-radius:var(--r-lg);
+  display:grid;gap:clamp(22px,3vw,40px);
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+}
+.foot h4{
+  font-size:11.5px;font-family:var(--mono);font-weight:400;
+  letter-spacing:.17em;text-transform:uppercase;color:var(--ink-3);
+  margin-bottom:15px;
+}
+.foot p,.foot li{color:var(--ink-2);font-size:14px;line-height:1.68;margin-bottom:9px;}
+.foot a:hover{color:var(--sky);}
+.socials{display:flex;gap:10px;margin-top:14px;}
+.socials a{
+  width:40px;height:40px;border-radius:13px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.34);
+  color:var(--ink-2);
+  transition:transform .4s var(--spring),background .3s,color .3s;
+}
+:root[data-theme="dark"] .socials a{background:rgba(255,255,255,.08);}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .socials a{background:rgba(255,255,255,.08);}
+}
+.socials a:hover{transform:translateY(-4px);background:var(--sky);color:#fff;}
+.foot-bottom{
+  margin-top:26px;padding-top:22px;
+  border-top:1px solid var(--hair-2);
+  grid-column:1/-1;
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--ink-3);
+}
+
+/* ---------------------------------------------------------------------------
+   Reveal on scroll
+   ------------------------------------------------------------------------- */
+/* The hidden state is gated behind .js-reveal, which a one line inline script
+   in <head> sets before first paint. CSS must never hide content on its own:
+   if the observer failed to run, or JS is off, every section below the hero
+   would stay invisible forever. This way the page degrades to fully visible. */
+/* The offset rides on `translate` and `scale`, NOT on `transform`. Components
+   animate their own transform for hover lift and pointer tilt, and the reveal
+   rule below carries three classes, so on `transform` it would outrank
+   `.card:hover` and quietly kill the lift on everything already revealed.
+   Independent transform properties compose instead of overwriting.
+   Direction and distance are per component; see motion.css. */
+.js-reveal .rise{
+  opacity:0;
+  translate:var(--rise-x,0px) var(--rise-y,22px);
+  scale:var(--rise-s,1);
+}
+.rise{
+  transition:opacity .75s var(--ease),translate .75s var(--ease),scale .75s var(--ease);
+  /* --i is the position within the reveal group, set by motion.js. Absent it
+     the whole group simply arrives together, which is the no-JS behaviour. */
+  transition-delay:calc(var(--i,0) * var(--m-step,70ms));
+}
+.js-reveal .rise.is-in{opacity:1;translate:none;scale:none;}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+  html{scroll-behavior:auto;}
+  .rise{opacity:1;transform:none;}
+}
+
+/* ---------------------------------------------------------------------------
+   Material tuning per surface
+   How much each glass surface frosts, tints and bends. liquid-glass.css owns
+   the material; these are the per-surface dials.
+   ------------------------------------------------------------------------- */
+
+/* A nav bar must stay readable above everything. A strong frost turns the
+   content passing underneath into texture rather than competing text, and the
+   bevel then bends that texture along the edge. */
+.nav.lg{
+  --lg-blur:20px;
+  --lg-sat:180%;
+  --lg-tint-x:2.2;
+  --lg-bright:1.30;
+}
+.nav.lg.is-stuck{--lg-tint-x:2.8;}
+
+/* Sits straight on the hero photograph: the best backdrop on the site, so it
+   runs clear and deep rather than frosted. */
+.hero-card.lg{
+  --lg-blur:5px;
+  --lg-tint:.10;
+  --lg-tint-x:1;
+  --lg-bright:.82;
+  --lg-sat:135%;
+  --lg-rim-lo:rgba(255,255,255,.22);
+}
+.btn-glass.lg{
+  --lg-blur:4px;
+  --lg-tint:.13;
+  --lg-bright:.9;
+}
+
+/* Content panes over the aurora and the rule. Light enough that the grid
+   reads through and the bend at the bevel is actually visible. */
+.stat.lg,.card.lg,.news-card.lg,.info.lg,.post.lg,.side-box.lg,
+.article.lg,.foot-inner.lg,.contact-pane.lg{
+  --lg-blur:7px;
+  --lg-tint-x:1.5;
+  --lg-sat:165%;
+}
+.article.lg,.contact-pane.lg{--lg-tint-x:2.1;}
+
+/* the thumbnail band sits above the pane's own tint */
+.news-thumb{background:linear-gradient(150deg,var(--sky-2),var(--sky));}
+.news-card:nth-child(2) .news-thumb{background:linear-gradient(150deg,#38D6EE,#0891B2);}
+.news-card:nth-child(3) .news-thumb{background:linear-gradient(150deg,#4ADE9F,#059669);}
+
+/* the callout sits inside the glass article, so it is painted, not filtered */
+.callout{
+  background:color-mix(in srgb,var(--sky) 8%,transparent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+}

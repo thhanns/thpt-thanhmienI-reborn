@@ -1,0 +1,207 @@
+/* ============================================================================
+   Liquid Glass
+   ---------------------------------------------------------------------------
+   A refracting glass material for THPT Thanh Miện.
+
+   Most "glassmorphism" is a blur plus a white overlay. Real glass is a lens:
+   it displaces what sits behind it, hardest at the bevel, and splits the
+   colour channels while doing it. liquid-glass.js generates a displacement map
+   per surface and drives the displacement; this file paints everything around
+   it (tint, bevel light, specular rim, press behaviour) and degrades to a
+   painted bevel where the browser cannot displace.
+
+   Usage:  <a class="cta-button" data-glass> ... </a>
+   Text heavy surfaces add   data-glass-dense   so labels stay readable.
+
+   NOTE ON LAYERS
+   Every card on this site already uses its own ::before for a hover shine,
+   so this material never touches ::before or ::after on a glass surface.
+   The three light layers are real elements the script injects:
+
+       .lg-sheen   cursor sheen, under the content
+       .lg-sweep   one shot entrance sweep, over the content
+       .lg-rim     hairline specular rim, on top
+
+   That way the effect drops in without silently overwriting anything.
+
+   Built on the site's existing tokens (--primary-color, --shadow-*, Inter).
+   ========================================================================= */
+
+:root{
+  /* how much white sits in the glass itself */
+  --lg-tint:.16;
+  --lg-tint-x:1;
+
+  /* the material pushes the backdrop's luminance away from the ink so text
+     stays readable over a photograph. Light site, so it lifts. */
+  --lg-bright:1.10;
+  --lg-bright-dense:1.32;
+
+  --lg-blur:2px;
+  --lg-sat:150%;
+
+  --lg-rim-hi:rgba(255,255,255,.98);
+  --lg-rim-mid:rgba(255,255,255,.45);
+  --lg-rim-lo:rgba(15,23,42,.10);
+  --lg-inner:rgba(255,255,255,.60);
+  --lg-sheen-c:rgba(255,255,255,.45);
+  --lg-shade:rgba(15,23,42,.20);
+
+  --lg-spring:cubic-bezier(.2,1.5,.35,1);
+}
+
+/* ---------------------------------------------------------------------------
+   The material
+   ------------------------------------------------------------------------- */
+/* Deliberately does NOT set position, border-radius or transition. Those
+   belong to the host: taking them over silently broke the fixed navbar (it
+   became relative and pushed the hero down) and flattened the hero button
+   from a 50px pill to a 20px rectangle. The script sets position only when
+   the host is static, and reads the host's real radius for the map. */
+.lg{
+  isolation:isolate;
+  --lg-ts:calc(var(--lg-tint) * var(--lg-tint-x));
+  background:
+    linear-gradient(177deg,
+      rgba(255,255,255,calc(var(--lg-ts) + .10)) 0%,
+      rgba(255,255,255,calc(var(--lg-ts) * .45)) 44%,
+      rgba(255,255,255,calc(var(--lg-ts) + .05)) 100%);
+
+  /* the script replaces this with the same chain plus the displacement
+     filter; this is the pre script and no-JS resting state */
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(var(--lg-bright));
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(var(--lg-bright));
+
+  box-shadow:
+    inset 0 0 0 .5px var(--lg-rim-lo),
+    inset 0 1.5px 9px -3px var(--lg-inner),
+    inset 0 -10px 24px -20px var(--lg-inner),
+    0 1px 2px rgba(15,23,42,.08),
+    0 18px 40px -14px var(--lg-shade);
+}
+
+/* Surfaces carrying reading text lift the backdrop further, which is what
+   keeps a nav link legible while the hero photograph scrolls under it. */
+.lg[data-glass-dense]{
+  --lg-tint-x:2.8;
+  --lg-bright:var(--lg-bright-dense);
+}
+
+/* --- injected light layers ------------------------------------------------ */
+.lg > .lg-sheen,
+.lg > .lg-sweep,
+.lg > .lg-rim{
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+}
+
+/* cursor sheen, below the content */
+.lg > .lg-sheen{
+  z-index:-1;
+  background:radial-gradient(190px 190px at var(--lg-mx,50%) var(--lg-my,0%),
+    var(--lg-sheen-c),transparent 70%);
+  opacity:var(--lg-sheen-o,0);
+  transition:opacity .4s ease;
+}
+.lg:hover{--lg-sheen-o:1;}
+
+/* Specular rim: a conic sweep masked down to a hairline border. The angle
+   comes from where the surface sits on the page, so every rim on the page
+   catches the same imaginary light. */
+.lg > .lg-rim{
+  z-index:3;
+  padding:1.25px;
+  background:conic-gradient(from calc(var(--lg-ang,140deg) - 90deg),
+    transparent 0deg,
+    var(--lg-rim-hi) 26deg,
+    var(--lg-rim-mid) 62deg,
+    transparent 108deg,
+    var(--lg-rim-mid) 168deg,
+    transparent 214deg,
+    var(--lg-rim-hi) 268deg,
+    var(--lg-rim-mid) 306deg,
+    transparent 352deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;
+}
+
+/* Where the browser cannot displace (Safari, Firefox) the bevel is painted
+   instead, so the surface still reads as glass rather than as flat frost. */
+.no-lg-refract .lg{
+  background:
+    linear-gradient(177deg,
+      rgba(255,255,255,calc(var(--lg-ts) + .18)) 0%,
+      rgba(255,255,255,calc(var(--lg-ts) * .7)) 42%,
+      rgba(255,255,255,calc(var(--lg-ts) + .13)) 100%);
+  box-shadow:
+    inset 0 0 0 .5px var(--lg-rim-lo),
+    inset 0 2px 14px -2px var(--lg-inner),
+    inset 0 -14px 30px -20px var(--lg-inner),
+    inset 7px 0 22px -20px var(--lg-inner),
+    inset -7px 0 22px -20px var(--lg-inner),
+    0 1px 2px rgba(15,23,42,.08),
+    0 18px 40px -14px var(--lg-shade);
+}
+
+/* ---------------------------------------------------------------------------
+   Animation
+   ------------------------------------------------------------------------- */
+
+/* Gel press: the surface squashes while the script pulls the refraction up at
+   the same moment, which is where the "liquid" reads. */
+.lg-press{cursor:pointer;-webkit-user-select:none;user-select:none;}
+.lg-press:active{transform:scale(.968);}
+/* only for hosts that carry no transition of their own; see attach() in the
+   script, which measures before adding this */
+.lg-needs-ease{transition:transform .5s var(--lg-spring),box-shadow .4s ease;}
+
+/* only what is actually moving gets promoted, and only while it moves */
+.lg-dragging{will-change:transform;}
+
+/* Entrance sweep: one specular pass across the surface the first time it
+   scrolls into view. Deliberately one shot. A looping shimmer would keep the
+   backdrop permanently dirty, which forces every glass surface above it to
+   re-run its three displacement passes every frame, forever, for motion
+   nobody is watching. */
+.lg > .lg-sweep{
+  z-index:2;
+  overflow:hidden;
+  opacity:0;
+}
+.lg-lit > .lg-sweep{
+  animation:lg-sweep-run 1.15s cubic-bezier(.35,.1,.25,1) forwards;
+}
+.lg > .lg-sweep::before{
+  content:"";
+  position:absolute;
+  top:-60%;
+  bottom:-60%;
+  width:38%;
+  left:-50%;
+  background:linear-gradient(100deg,
+    transparent,
+    rgba(255,255,255,.14) 22%,
+    rgba(255,255,255,.62) 50%,
+    rgba(255,255,255,.14) 78%,
+    transparent);
+  filter:blur(2px);
+  transform:skewX(-18deg);
+}
+@keyframes lg-sweep-run{
+  0%   { opacity:0; transform:translateX(0); }
+  12%  { opacity:1; }
+  88%  { opacity:1; }
+  100% { opacity:0; transform:translateX(240%); }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .lg-needs-ease{transition-duration:.001ms !important;}
+  .lg-lit > .lg-sweep{animation:none;}
+}
+
+/* Site specific application now lives in glass-ui.css, which loads after this
+   file so page rules can tune the material per surface. */
